@@ -22,7 +22,12 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Installer sans auto-scripts pour éviter l'erreur
+RUN composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
+
+# Clear cache, assets install etc.
+RUN php bin/console cache:clear && \
+    php bin/console assets:install public
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build

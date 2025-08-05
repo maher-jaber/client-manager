@@ -82,9 +82,7 @@
             "importmap:install": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts",
-            "@php bin/console cache:clear",
-            "@php bin/console cache:warmup"
+            "@auto-scripts"
         ],
         "post-update-cmd": [
             "@auto-scripts"
