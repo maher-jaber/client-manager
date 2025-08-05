@@ -22,6 +22,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
+RUN composer require symfony/runtime
 # Installer sans auto-scripts pour éviter l'erreur
 RUN composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
