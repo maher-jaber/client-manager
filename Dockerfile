@@ -27,8 +27,7 @@ RUN composer require symfony/runtime --no-scripts --no-interaction --prefer-dist
 RUN composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
 # Clear cache, assets install etc.
-RUN php bin/console cache:clear && \
-    php bin/console assets:install public
+RUN php bin/console assets:install public
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build
