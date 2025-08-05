@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: symfony-app
+    runtime: php
+    plan: free
+    region: oregon
+
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php bin/console doctrine:schema:create --no-interaction
+      php bin/console doctrine:fixtures:load --no-interaction
+      npm install
+      npm run build
+
+    startCommand: php -S 0.0.0.0:10000 -t public
+
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: false
+      - key: DATABASE_URL
+        value: postgresql://root:kxY7SF2MBsZuLeXcShmrBP86oGzoQ73y@dpg-d2901rndiees73feo0k0-a/app_ufte
+      - key: MAILER_DSN
+        value: smtp://user:pass@smtp.mailtrap.io:587
