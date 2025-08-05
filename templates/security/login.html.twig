@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion | Client Manager{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            /* Optionnel: ajout d'une texture discrète */
+            background-image: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
+            background-repeat: repeat;
+            background-size: auto;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+        }
+        /* Pour un contraste plus marqué */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        /* Icone en bleu foncé */
+        .fa-user-lock {
+            color: #0d47a1;
+        }
+        /* Bouton avec dégradé bleu */
+        .btn-primary {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            border: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #2196f3);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <i class="fas fa-user-lock fa-3x mb-2"></i>
+            <h2 class="h4" style="color:#0d47a1;">Connexion sécurisée</h2>
+            <p class="text-muted small">Veuillez entrer vos identifiants</p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="alert alert-info mb-3">
+                Connecté en tant que {{ app.user.userIdentifier }}. 
+                <a href="{{ path('app_logout') }}">Déconnexion</a>
+            </div>
+        {% endif %}
+
+        <form method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Adresse email</label>
+                <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-primary w-100" type="submit">
+                <i class="fas fa-sign-in-alt me-2"></i> Connexion
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <small class="text-muted">Besoin d'aide ? <a href="#">Contact support</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

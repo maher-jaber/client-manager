@@ -1,0 +1,24 @@
+<h2>Bonjour {{ client.nomClient }},</h2>
+
+<p>Voici les modifications récentes concernant les actions associées à votre dossier :</p>
+
+{% if added %}
+    <h4>✅ Nouvelles actions ajoutées :</h4>
+    <ul>
+        {% for action in added %}
+            <li>{{ action }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if removed %}
+    <h4>❌ Actions retirées :</h4>
+    <ul>
+        {% for action in removed %}
+            <li>{{ action }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Nous restons à votre disposition pour tout complément.</p>
+<p>L’équipe Altra Call</p>

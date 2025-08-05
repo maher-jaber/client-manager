@@ -1,0 +1,31 @@
+{% if pageCount > 1 %}
+    <nav>
+        <div class="d-flex justify-content-center my-3 flex-wrap gap-2">
+            {% if previous is defined %}
+                <a class="btn btn-outline-primary" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">
+                    &laquo; Précédent
+                </a>
+            {% else %}
+                <button class="btn btn-outline-secondary" disabled>&laquo; Précédent</button>
+            {% endif %}
+
+            {% for page in pagesInRange %}
+                {% if page != current %}
+                    <a class="btn btn-primary" href="{{ path(route, query|merge({(pageParameterName): page})) }}">
+                        {{ page }}
+                    </a>
+                {% else %}
+                    <button class="btn btn-primary active" disabled>{{ page }}</button>
+                {% endif %}
+            {% endfor %}
+
+            {% if next is defined %}
+                <a class="btn btn-outline-primary" href="{{ path(route, query|merge({(pageParameterName): next})) }}">
+                    Suivant &raquo;
+                </a>
+            {% else %}
+                <button class="btn btn-outline-secondary" disabled>Suivant &raquo;</button>
+            {% endif %}
+        </div>
+    </nav>
+{% endif %}
