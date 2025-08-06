@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\IDS;
 
 use App\Entity\ClientActionLog;
 use App\Form\ClientActionLogType;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/client/action/log')]
+#[Route('/dashboard/ids/client/action/log')]
 final class ClientActionLogController extends AbstractController
 {
     #[Route(name: 'app_client_action_log_index', methods: ['GET'])]

@@ -15,7 +15,7 @@ class Client
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $commercial = null;
 
     #[ORM\Column(length: 255)]
@@ -62,6 +62,10 @@ class Client
      */
     #[ORM\ManyToMany(targetEntity: ClientActionLog::class, mappedBy: 'clients')]
     private Collection $clientActionLogs;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dernierEnvoiMail = null;
+
 
     public function __construct()
     {
@@ -267,6 +271,17 @@ class Client
             $clientActionLog->removeClient($this);
         }
 
+        return $this;
+    }
+
+    public function getDernierEnvoiMail(): ?\DateTimeInterface
+    {
+        return $this->dernierEnvoiMail;
+    }
+
+    public function setDernierEnvoiMail(?\DateTimeInterface $date): self
+    {
+        $this->dernierEnvoiMail = $date;
         return $this;
     }
 }

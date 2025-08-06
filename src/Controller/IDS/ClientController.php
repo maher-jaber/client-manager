@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\IDS;
 
 use App\Entity\Client;
 use App\Entity\ClientActionLog;
@@ -20,7 +20,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
 
-#[Route('/client')]
+#[Route('/dashboard/ids/client')]
 final class ClientController extends AbstractController
 {
     #[Route('/', name: 'app_client_index')]
@@ -41,7 +41,26 @@ final class ClientController extends AbstractController
             $queryBuilder->andWhere('c.nomClient LIKE :search OR c.email LIKE :search OR c.numeroContrat LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
-
+        if ($dateFrom = $request->query->get('date_from')) {
+            $from = \DateTime::createFromFormat('Y-m-d', $dateFrom);
+            if ($from) {
+                $from->setTime(00, 00, 00);
+                $queryBuilder->andWhere('c.dernierEnvoiMail >= :fromDate')
+                             ->setParameter('fromDate', $from)
+                             ->orderBy('c.dernierEnvoiMail', 'ASC');
+            }
+        }
+        
+        if ($dateTo = $request->query->get('date_to')) {
+            $to = \DateTime::createFromFormat('Y-m-d', $dateTo);
+            if ($to) {
+                // Ajouter 1 jour pour inclure toute la journée sélectionnée
+                $to->setTime(23, 59, 59);
+                $queryBuilder->andWhere('c.dernierEnvoiMail <= :toDate')
+                             ->setParameter('toDate', $to)
+                             ->orderBy('c.dernierEnvoiMail', 'ASC');
+            }
+        }
         // Récupération des commerciaux distincts
         $commerciaux = $em->getRepository(Client::class)
             ->createQueryBuilder('c')
@@ -130,6 +149,7 @@ final class ClientController extends AbstractController
                     'Mise à jour de vos actions',
                     $htmlBody
                 );
+                $client->setDernierEnvoiMail(new \DateTimeImmutable());
             }
             $log = new ClientActionLog();
             $log->setPerformedAt(new \DateTime());
@@ -204,6 +224,7 @@ final class ClientController extends AbstractController
                     'Mise à jour des actions vous concernant',
                     $htmlBody
                 );
+                $client->setDernierEnvoiMail(new \DateTimeImmutable());
             }
 
             // Journaliser les actions appliquées
