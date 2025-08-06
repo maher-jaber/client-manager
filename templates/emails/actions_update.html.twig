@@ -1,24 +1,111 @@
-<h2>Bonjour {{ client.nomClient }},</h2>
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Modifications des actions</title>
+		<style>
+			body {
+				background-color: #f5f7fa;
+				font-family: Arial, sans-serif;
+				color: #333;
+				margin: 0;
+				padding: 0;
+			}
 
-<p>Voici les modifications récentes concernant les actions associées à votre dossier :</p>
+			.container {
+				max-width: 600px;
+				margin: 30px auto;
+				background: #ffffff;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
 
-{% if added %}
-    <h4>✅ Nouvelles actions ajoutées :</h4>
-    <ul>
-        {% for action in added %}
-            <li>{{ action }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+			.header {
+				background-color: #004aad;
+				color: white;
+				padding: 20px;
+				text-align: center;
+			}
 
-{% if removed %}
-    <h4>❌ Actions retirées :</h4>
-    <ul>
-        {% for action in removed %}
-            <li>{{ action }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+			.content {
+				padding: 30px;
+			}
 
-<p>Nous restons à votre disposition pour tout complément.</p>
-<p>L’équipe Altra Call</p>
+			h2 {
+				margin-top: 0;
+			}
+
+			ul {
+				padding-left: 20px;
+			}
+
+			.footer {
+				background-color: #f0f0f0;
+				text-align: center;
+				padding: 15px;
+				font-size: 13px;
+				color: #777;
+			}
+
+			.added {
+				color: #28a745;
+			}
+
+			.removed {
+				color: #dc3545;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>Altra Call</h1>
+			</div>
+			<div class="content">
+				<h2>Bonjour
+					{{ client.nomClient }},</h2>
+				<p>Voici les modifications récentes concernant les actions associées à votre dossier :</p>
+
+				{% if added %}
+					<div style="margin-top: 20px;">
+						<h4 style="color: #28a745; font-size: 18px; display: flex; align-items: center;">
+							<img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" width="20" height="20" alt="Ajouté" style="margin-right: 8px;">
+							Nouvelles actions ajoutées
+						</h4>
+						<ul style="list-style: none; padding-left: 0;">
+							{% for action in added %}
+								<li style="margin: 6px 0;">
+									<span style="
+											                        background-color: #d4edda;
+											                        color: #155724;
+											                        padding: 6px 12px;
+											                        border-radius: 15px;
+											                        display: inline-block;
+											                        font-size: 14px;
+											                        font-weight: 500;
+											                        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+											                    ">
+										✅
+										{{ action }}
+									</span>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+
+
+				<p>Nous restons à votre disposition pour tout complément.</p>
+				<p>Bien cordialement,<br>L’équipe
+					<strong>Altra Call</strong>
+				</p>
+			</div>
+			<div class="footer">
+				©
+				{{ "now"|date("Y") }}
+				Altra Call – Tous droits réservés.
+			</div>
+		</div>
+	</body>
+</html>

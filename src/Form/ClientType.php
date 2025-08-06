@@ -45,8 +45,7 @@ class ClientType extends AbstractType
                 'choice_label' => 'label', // à adapter selon ton champ dans Action
                 'multiple' => true,
                 'expanded' => true,
-                'required' => false,
-                'by_reference' => false,
+                'mapped' => false, // <-- Clé ici : ne pas mapper à l'entité Client
             ]);
     }
 

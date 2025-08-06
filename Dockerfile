@@ -22,11 +22,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN composer require symfony/runtime --no-scripts --no-interaction --prefer-dist --optimize-autoloader
-# Installer sans auto-scripts pour éviter l'erreur
-RUN composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
-
-
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build

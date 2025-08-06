@@ -14,8 +14,14 @@ class MailerService
     private string $fromEmail;
     private string $fromName;
 
-    public function __construct(string $host, string $username, string $password, int $port, string $fromEmail, string $fromName)
-    {
+    public function __construct(
+        string $host,
+        string $username,
+        string $password,
+        int $port,
+        string $fromEmail,
+        string $fromName
+    ) {
         $this->host = $host;
         $this->username = $username;
         $this->password = $password;
@@ -30,17 +36,30 @@ class MailerService
 
         try {
             $mail->isSMTP();
-            $mail->Host       = $this->host;
-            $mail->SMTPAuth   = true;
-            $mail->Username   = $this->username;
-            $mail->Password   = $this->password;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = $this->port;
+            $mail->Host = $this->host;
+            $mail->Port = $this->port;
+
+            if (!empty($this->username) && !empty($this->password)) {
+                $mail->SMTPAuth = true;
+                $mail->Username = $this->username;
+                $mail->Password = $this->password;
+            } else {
+                $mail->SMTPAuth = false;
+            }
+
+            // Chiffrement selon port
+            if ($this->port == 465) {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL
+            } elseif ($this->port == 587) {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // TLS
+            } else {
+                $mail->SMTPSecure = false;
+            }
 
             $mail->setFrom($this->fromEmail, $this->fromName);
             $mail->addAddress($toEmail, $toName);
 
-            $mail->isHTML(false);
+            $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $body;
 
@@ -48,7 +67,7 @@ class MailerService
 
             return true;
         } catch (Exception $e) {
-            // Tu peux logger l'erreur ici si besoin
+            error_log('Mailer Error: ' . $mail->ErrorInfo); // Pour debug
             return false;
         }
     }

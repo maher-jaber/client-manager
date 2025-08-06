@@ -57,9 +57,16 @@ class Client
     #[ORM\ManyToMany(targetEntity: Action::class, mappedBy: 'clients')]
     private Collection $actions;
 
+    /**
+     * @var Collection<int, ClientActionLog>
+     */
+    #[ORM\ManyToMany(targetEntity: ClientActionLog::class, mappedBy: 'clients')]
+    private Collection $clientActionLogs;
+
     public function __construct()
     {
         $this->actions = new ArrayCollection();
+        $this->clientActionLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -231,6 +238,33 @@ class Client
     {
         if ($this->actions->removeElement($action)) {
             $action->removeClient($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ClientActionLog>
+     */
+    public function getClientActionLogs(): Collection
+    {
+        return $this->clientActionLogs;
+    }
+
+    public function addClientActionLog(ClientActionLog $clientActionLog): static
+    {
+        if (!$this->clientActionLogs->contains($clientActionLog)) {
+            $this->clientActionLogs->add($clientActionLog);
+            $clientActionLog->addClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientActionLog(ClientActionLog $clientActionLog): static
+    {
+        if ($this->clientActionLogs->removeElement($clientActionLog)) {
+            $clientActionLog->removeClient($this);
         }
 
         return $this;
