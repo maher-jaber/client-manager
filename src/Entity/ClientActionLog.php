@@ -37,11 +37,18 @@ class ClientActionLog
     #[ORM\Column(type: Types::TEXT, nullable:true)]
     private ?string $note = null;
 
+    /**
+     * @var Collection<int, Society>
+     */
+    #[ORM\OneToMany(targetEntity: Society::class, mappedBy: 'clientActionLog')]
+    private Collection $entite;
+
     public function __construct()
     {
         $this->clients = new ArrayCollection();
         $this->actions = new ArrayCollection();
         $this->performedAt = new \DateTime();
+        $this->entite = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +136,36 @@ class ClientActionLog
     public function setNote(string $note): static
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Society>
+     */
+    public function getEntite(): Collection
+    {
+        return $this->entite;
+    }
+
+    public function addEntite(Society $entite): static
+    {
+        if (!$this->entite->contains($entite)) {
+            $this->entite->add($entite);
+            $entite->setClientActionLog($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEntite(Society $entite): static
+    {
+        if ($this->entite->removeElement($entite)) {
+            // set the owning side to null (unless already changed)
+            if ($entite->getClientActionLog() === $this) {
+                $entite->setClientActionLog(null);
+            }
+        }
 
         return $this;
     }

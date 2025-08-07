@@ -33,7 +33,7 @@ final class ActionController extends AbstractController
         $pagination = $paginator->paginate(
             $qb->getQuery(),
             $request->query->getInt('page', 1),
-            10
+            5
         );
 
         return $this->render('action/index.html.twig', [

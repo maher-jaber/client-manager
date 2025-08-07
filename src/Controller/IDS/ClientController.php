@@ -75,11 +75,7 @@ final class ClientController extends AbstractController
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
-            10,
-            [
-                'defaultSortFieldName' => 'c.nomClient',
-                'defaultSortDirection' => 'asc',
-            ]
+            10
         );
         $allActions = $actionRepo->findAll();
         return $this->render('client/index.html.twig', [
