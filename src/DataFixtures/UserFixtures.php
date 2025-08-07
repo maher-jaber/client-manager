@@ -28,7 +28,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $user = new User();
         $user->setEmail('admin@example.com');
-        $user->setRoles(['ROLE_ADMIN,ROLE_USER']);
+        $user->setRoles(['ROLE_ADMIN']);
         $user->setPassword($this->passwordHasher->hashPassword($user, 'admin123'));
 
         $user->addEntite($ids);

@@ -26,6 +26,9 @@ final class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index')]
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, ActionRepository $actionRepo, Request $request): Response
     {
+        if (!$this->getUser()->hasPermission('client', 'list')) {
+            throw $this->createAccessDeniedException();
+        }
         $queryBuilder = $em->getRepository(Client::class)
             ->createQueryBuilder('c')
             ->orderBy('c.nomClient', 'ASC');
@@ -176,6 +179,9 @@ final class ClientController extends AbstractController
     #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->getUser()->hasPermission('client', 'create')) {
+            throw $this->createAccessDeniedException();
+        }
         $client = new Client();
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
@@ -203,6 +209,21 @@ final class ClientController extends AbstractController
         EntityManagerInterface $entityManager,
         MailerService $mailerService
     ): Response {
+
+
+        $user = $this->getUser();
+
+        // Vérifie que l'utilisateur a la permission 'edit' sur l'entité 'client'
+        if (!$user->hasPermission('client', 'edit')) {
+            throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
+        }
+
+
+
+
+
+
+
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
@@ -255,6 +276,9 @@ final class ClientController extends AbstractController
     #[Route('/{id}', name: 'app_client_delete', methods: ['POST'])]
     public function delete(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->getUser()->hasPermission('client', 'delete')) {
+            throw $this->createAccessDeniedException();
+        }
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
 
         if ($this->isCsrfTokenValid('delete' . $client->getId(), $request->request->get('_token'))) {
@@ -268,6 +292,9 @@ final class ClientController extends AbstractController
     #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
     public function show(Request $request, Client $client): Response
     {
+        if (!$this->getUser()->hasPermission('client', 'view')) {
+            throw $this->createAccessDeniedException();
+        }
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
 
         return $this->render('client/show.html.twig', [

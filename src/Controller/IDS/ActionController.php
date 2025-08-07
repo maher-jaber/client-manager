@@ -20,6 +20,9 @@ final class ActionController extends AbstractController
     #[Route('/', name: 'app_action_index', methods: ['GET'])]
     public function index(Request $request, ActionRepository $actionRepository, PaginatorInterface $paginator): Response
     {
+        if (!$this->getUser()->hasPermission('action', 'list')) {
+            throw $this->createAccessDeniedException();
+        }
         $search = $request->query->get('search');
         $qb = $actionRepository->createQueryBuilder('a');
 
@@ -44,6 +47,9 @@ final class ActionController extends AbstractController
     #[Route('/new', name: 'app_action_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
+        if (!$this->getUser()->hasPermission('action', 'create')) {
+            throw $this->createAccessDeniedException();
+        }
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action);
         $form->handleRequest($request);
@@ -83,6 +89,9 @@ final class ActionController extends AbstractController
     #[Route('/{id}', name: 'app_action_show', methods: ['GET'])]
     public function show(Action $action): Response
     {
+        if (!$this->getUser()->hasPermission('action', 'view')) {
+            throw $this->createAccessDeniedException();
+        }
         return $this->render('action/show.html.twig', [
             'action' => $action,
         ]);
@@ -95,6 +104,10 @@ final class ActionController extends AbstractController
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): Response {
+        if (!$this->getUser()->hasPermission('action', 'edit')) {
+            throw $this->createAccessDeniedException();
+        }
+
         $form = $this->createForm(ActionType::class, $action);
         $form->handleRequest($request);
 
@@ -139,6 +152,9 @@ final class ActionController extends AbstractController
     #[Route('/{id}', name: 'app_action_delete', methods: ['POST'])]
     public function delete(Request $request, Action $action, EntityManagerInterface $em): Response
     {
+        if (!$this->getUser()->hasPermission('action', 'delete')) {
+            throw $this->createAccessDeniedException();
+        }
         if ($this->isCsrfTokenValid('delete' . $action->getId(), $request->getPayload()->getString('_token'))) {
             // Supprimer le logo si existant
             $logo = $action->getLogo();

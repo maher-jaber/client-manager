@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +17,31 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
 	#[Route('/', name: 'admin_user_index')]
-	public function index(UserRepository $userRepository): Response
+	public function index(UserRepository $userRepository, Request $request, PaginatorInterface $paginator): Response
 	{
+       
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-		return $this->render('admin/user/index.html.twig', [
-			'users' => $userRepository->findAll(),
-		]);
+        $search = $request->query->get('q');
+    
+        $qb = $userRepository->createQueryBuilder('u');
+    
+        if ($search) {
+            $qb->where('u.email LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+    
+        $qb->orderBy('u.email', 'ASC');
+    
+        $pagination = $paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            10
+        );
+    
+        return $this->render('admin/user/index.html.twig', [
+            'pagination' => $pagination,
+            'search' => $search,
+        ]);
 	}
 
 	#[Route('/new', name: 'admin_user_new')]

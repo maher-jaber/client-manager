@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ user.id ? 'Modifier un utilisateur' : 'Créer un utilisateur' }}
+{% endblock %}
+
+{% block body %}
+<style>
+.form-check {
+    margin-bottom: 0.5rem; /* espace sous chaque checkbox */
+}
+</style>
+{% include 'layout-global.html.twig' %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        {{ user.id ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}
+    </h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email, { 'attr': {'class': 'form-control'} }) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.roles) }}
+                    {{ form_widget(form.roles, { 'attr': {'class': 'form-select'} }) }}
+                    {{ form_errors(form.roles) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.password) }}
+                    {{ form_widget(form.password, { 'attr': {'class': 'form-control'} }) }}
+                    {{ form_errors(form.password) }}
+                </div>
+                 <div class="mb-3">
+    {{ form_label(form.permissions) }}
+    <div>
+        {% for checkbox in form.permissions %}
+            <div class="form-check mb-2">
+                {{ form_widget(checkbox, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(checkbox, null, {'label_attr': {'class': 'form-check-label'}}) }}
+            </div>
+        {% endfor %}
+    </div>
+    {{ form_errors(form.permissions) }}
+</div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('admin_user_index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Enregistrer
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

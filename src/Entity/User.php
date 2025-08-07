@@ -40,11 +40,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Society::class, inversedBy: 'users')]
     private Collection $entite;
 
+    /**
+     * @var Collection<int, Permission>
+     */
+    #[ORM\ManyToMany(targetEntity: Permission::class, inversedBy: 'users')]
+    private Collection $permissions;
+
+    
+
  
 
     public function __construct()
     {
         $this->entite = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +148,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->entite->removeElement($entite);
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Permission>
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function addPermission(Permission $permission): static
+    {
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions->add($permission);
+        }
+
+        return $this;
+    }
+
+    public function removePermission(Permission $permission): static
+    {
+        $this->permissions->removeElement($permission);
+
+        return $this;
+    }
+
+    public function hasPermission(string $entity, string $action): bool
+    {
+        foreach ($this->permissions as $permission) {
+            if (
+                $permission->getEntity() === $entity &&
+                $permission->getAction() === $action
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     

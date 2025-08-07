@@ -37,3 +37,8 @@ services:
             $port: '%mailer.port%'
             $fromEmail: '%mailer.from_email%'
             $fromName: '%mailer.from_name%'
+
+            
+    App\EventListener\AccessDeniedExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès refusé{% endblock %}
+
+{% block body %}
+{% include 'layout-global.html.twig' %}
+    <div class="container mt-5 text-center">
+        <h1 class="display-4 text-danger">⛔ Accès refusé</h1>
+        <p class="lead mt-4">
+            {{ message }}
+        </p>
+
+        {% if route %}
+            <p class="text-muted">Route bloquée : <code>{{ route }}</code></p>
+        {% endif %}
+
+        <a href="{{ path('switch_company') }}" class="btn btn-primary mt-4">
+            <i class="bi bi-house"></i> Retour à l'accueil
+        </a>
+    </div>
+{% endblock %}

@@ -1,36 +1,107 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des utilisateurs{% endblock %}
+{% block title %}Gestion des utilisateurs
+{% endblock %}
 
 {% block body %}
 	{% include 'layout-global.html.twig' %}
 
-    <div class="container mt-4">
-        <h2 class="mb-4">Utilisateurs</h2>
-        <a href="{{ path('admin_user_new') }}" class="btn btn-success mb-3">Ajouter un utilisateur</a>
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Rôles</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>
-                            {% for role in user.roles %}
-                                <span class="badge bg-info text-dark">{{ role }}</span>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr><td colspan="3">Aucun utilisateur trouvé.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+	<div class="container mt-4">
+		<h1 class="mb-4">Gestion des utilisateurs</h1>
+
+		<div class="row mb-3">
+			<div class="col-md-8">
+				<form method="get" class="d-flex">
+					<input type="text" name="q" value="{{ search }}" class="form-control me-2" placeholder="Rechercher par email...">
+					<button type="submit" class="btn btn-outline-primary me-2">
+						<i class="bi bi-search"></i>
+					</button>
+					<a href="{{ path('admin_user_index') }}" class="btn btn-outline-secondary" title="Réinitialiser la recherche">
+
+						Réinitialiser
+					</a>
+				</form>
+			</div>
+			<div class="col-md-4 text-end">
+				<a href="{{ path('admin_user_new') }}" class="btn btn-primary">
+					<i class="bi bi-plus-circle me-1"></i>
+					Nouvel utilisateur
+				</a>
+			</div>
+		</div>
+
+		<div class="card shadow-sm">
+			<div class="card-header bg-primary text-white fw-semibold">
+				Liste des utilisateurs
+			</div>
+			<div class="card-body p-0">
+				<table class="table table-hover mb-0">
+					<thead class="table-light">
+						<tr>
+							<th>ID</th>
+							<th>Email</th>
+							<th>Rôles</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for user in pagination %}
+							<tr>
+								<td>{{ user.id }}</td>
+								<td>{{ user.email }}</td>
+								<td>
+									{% for role in user.roles %}
+										<span class="badge bg-secondary">{{ role }}</span>
+									{% endfor %}
+								</td>
+								<td>
+									<a href="{{ path('admin_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary me-1">
+										<i class="bi bi-pencil-square"></i>
+									</a>
+									<!-- Bouton pour ouvrir le modal -->
+									<button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
+										<i class="bi bi-trash"></i>
+									</button>
+									<div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content">
+												<div class="modal-header bg-danger text-white">
+													<h5 class="modal-title" id="deleteModalLabel{{ user.id }}">Confirmer la suppression</h5>
+													<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+												</div>
+												<div class="modal-body">
+													Êtes-vous sûr de vouloir supprimer l'utilisateur
+													<br>
+													<strong>{{ user.email }}</strong>
+													?
+													<br>
+													Cette action est irréversible.
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+													<form method="post" action="{{ path('admin_user_delete', {'id': user.id}) }}" style="display:inline-block;">
+														<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+														<button type="submit" class="btn btn-danger">Supprimer</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="4" class="text-center text-muted py-4">Aucun utilisateur trouvé.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="mt-3">
+			{{ knp_pagination_render(pagination) }}
+		</div>
+	</div>
 {% endblock %}
