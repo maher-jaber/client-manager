@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+	{% include 'layout-global.html.twig' %}
+
+    <div class="container mt-4">
+        <h2 class="mb-4">Utilisateurs</h2>
+        <a href="{{ path('admin_user_new') }}" class="btn btn-success mb-3">Ajouter un utilisateur</a>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Rôles</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% for role in user.roles %}
+                                <span class="badge bg-info text-dark">{{ role }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Aucun utilisateur trouvé.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

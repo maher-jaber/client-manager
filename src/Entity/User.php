@@ -40,6 +40,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Society::class, inversedBy: 'users')]
     private Collection $entite;
 
+ 
+
     public function __construct()
     {
         $this->entite = new ArrayCollection();
@@ -138,4 +140,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    
 }

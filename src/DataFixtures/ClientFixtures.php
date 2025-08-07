@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Client;
+use App\Entity\Society;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -45,6 +46,7 @@ class ClientFixtures extends Fixture
             $client->setNumeroClient($data[8]);
             $client->setTelephoneCabinet($data[9]);
             $client->setGsmPraticien($data[10]);
+            $client->setEntite($manager->getRepository(Society::class)->findOneBy(['label'=>'IDS']));
 
             
 

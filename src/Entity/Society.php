@@ -18,14 +18,27 @@ class Society
     #[ORM\Column(length: 255)]
     private ?string $label = null;
 
-    #[ORM\ManyToOne(inversedBy: 'entite')]
-    private ?Client $client = null;
+   
 
-    #[ORM\ManyToOne(inversedBy: 'entite')]
-    private ?Action $action = null;
+    
 
-    #[ORM\ManyToOne(inversedBy: 'entite')]
-    private ?ClientActionLog $clientActionLog = null;
+    /**
+     * @var Collection<int, Client>
+     */
+    #[ORM\OneToMany(targetEntity: Client::class, mappedBy: 'entite')]
+    private Collection $clients;
+
+    /**
+     * @var Collection<int, Action>
+     */
+    #[ORM\OneToMany(targetEntity: Action::class, mappedBy: 'entite')]
+    private Collection $actions;
+
+    /**
+     * @var Collection<int, ClientActionLog>
+     */
+    #[ORM\OneToMany(targetEntity: ClientActionLog::class, mappedBy: 'entite')]
+    private Collection $clientActionLogs;
 
     /**
      * @var Collection<int, User>
@@ -35,6 +48,10 @@ class Society
 
     public function __construct()
     {
+        
+        $this->clients = new ArrayCollection();
+        $this->actions = new ArrayCollection();
+        $this->clientActionLogs = new ArrayCollection();
         $this->users = new ArrayCollection();
     }
 
@@ -54,39 +71,96 @@ class Society
 
         return $this;
     }
+   
 
-    public function getClient(): ?Client
+   
+
+    /**
+     * @return Collection<int, Client>
+     */
+    public function getClients(): Collection
     {
-        return $this->client;
+        return $this->clients;
     }
 
-    public function setClient(?Client $client): static
+    public function addClient(Client $client): static
     {
-        $this->client = $client;
+        if (!$this->clients->contains($client)) {
+            $this->clients->add($client);
+            $client->setEntite($this);
+        }
 
         return $this;
     }
 
-    public function getAction(): ?Action
+    public function removeClient(Client $client): static
     {
-        return $this->action;
-    }
-
-    public function setAction(?Action $action): static
-    {
-        $this->action = $action;
+        if ($this->clients->removeElement($client)) {
+            // set the owning side to null (unless already changed)
+            if ($client->getEntite() === $this) {
+                $client->setEntite(null);
+            }
+        }
 
         return $this;
     }
 
-    public function getClientActionLog(): ?ClientActionLog
+    /**
+     * @return Collection<int, Action>
+     */
+    public function getActions(): Collection
     {
-        return $this->clientActionLog;
+        return $this->actions;
     }
 
-    public function setClientActionLog(?ClientActionLog $clientActionLog): static
+    public function addAction(Action $action): static
     {
-        $this->clientActionLog = $clientActionLog;
+        if (!$this->actions->contains($action)) {
+            $this->actions->add($action);
+            $action->setEntite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAction(Action $action): static
+    {
+        if ($this->actions->removeElement($action)) {
+            // set the owning side to null (unless already changed)
+            if ($action->getEntite() === $this) {
+                $action->setEntite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ClientActionLog>
+     */
+    public function getClientActionLogs(): Collection
+    {
+        return $this->clientActionLogs;
+    }
+
+    public function addClientActionLog(ClientActionLog $clientActionLog): static
+    {
+        if (!$this->clientActionLogs->contains($clientActionLog)) {
+            $this->clientActionLogs->add($clientActionLog);
+            $clientActionLog->setEntite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientActionLog(ClientActionLog $clientActionLog): static
+    {
+        if ($this->clientActionLogs->removeElement($clientActionLog)) {
+            // set the owning side to null (unless already changed)
+            if ($clientActionLog->getEntite() === $this) {
+                $clientActionLog->setEntite(null);
+            }
+        }
 
         return $this;
     }

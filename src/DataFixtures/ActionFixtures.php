@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Action;
+use App\Entity\Society;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -15,11 +16,17 @@ class ActionFixtures extends Fixture
             'Sauvegarde Altra backup',
             'Sauvegarde Cobian',
             'Vérification pc',
+            'Sauvegarde Veeam',
+            'Antivirus Bitdefender',
+            'Altra Backup',
+            'Espace serveur'
         ];
 
         foreach ($labels as $label) {
             $action = new Action();
             $action->setLabel($label);
+            $action->setEntite($manager->getRepository(Society::class)->findOneBy(['label'=>'IDS']));
+            
             $manager->persist($action);
         }
 

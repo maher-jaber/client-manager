@@ -66,12 +66,10 @@ class Client
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $dernierEnvoiMail = null;
 
-    /**
-     * @var Collection<int, Society>
-     */
-    #[ORM\OneToMany(targetEntity: Society::class, mappedBy: 'client')]
-    private Collection $entite;
+    #[ORM\ManyToOne(inversedBy: 'clients')]
+    private ?Society $entite = null;
 
+  
    
 
 
@@ -79,7 +77,7 @@ class Client
     {
         $this->actions = new ArrayCollection();
         $this->clientActionLogs = new ArrayCollection();
-        $this->entite = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -294,35 +292,19 @@ class Client
         return $this;
     }
 
-    /**
-     * @return Collection<int, Society>
-     */
-    public function getEntite(): Collection
+    public function getEntite(): ?Society
     {
         return $this->entite;
     }
 
-    public function addEntite(Society $entite): static
+    public function setEntite(?Society $entite): static
     {
-        if (!$this->entite->contains($entite)) {
-            $this->entite->add($entite);
-            $entite->setClient($this);
-        }
+        $this->entite = $entite;
 
         return $this;
     }
 
-    public function removeEntite(Society $entite): static
-    {
-        if ($this->entite->removeElement($entite)) {
-            // set the owning side to null (unless already changed)
-            if ($entite->getClient() === $this) {
-                $entite->setClient(null);
-            }
-        }
-
-        return $this;
-    }
+   
 
   
 }

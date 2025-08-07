@@ -34,11 +34,10 @@ class Action
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logo = null;
 
-    /**
-     * @var Collection<int, Society>
-     */
-    #[ORM\OneToMany(targetEntity: Society::class, mappedBy: 'action')]
-    private Collection $entite;
+    #[ORM\ManyToOne(inversedBy: 'actions')]
+    private ?Society $entite = null;
+
+   
 
   
     
@@ -47,7 +46,7 @@ class Action
     {
         $this->clients = new ArrayCollection();
         $this->clientActionLogs = new ArrayCollection();
-        $this->entite = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -128,35 +127,18 @@ class Action
         return $this;
     }
 
-    /**
-     * @return Collection<int, Society>
-     */
-    public function getEntite(): Collection
+    public function getEntite(): ?Society
     {
         return $this->entite;
     }
 
-    public function addEntite(Society $entite): static
+    public function setEntite(?Society $entite): static
     {
-        if (!$this->entite->contains($entite)) {
-            $this->entite->add($entite);
-            $entite->setAction($this);
-        }
+        $this->entite = $entite;
 
         return $this;
     }
 
-    public function removeEntite(Society $entite): static
-    {
-        if ($this->entite->removeElement($entite)) {
-            // set the owning side to null (unless already changed)
-            if ($entite->getAction() === $this) {
-                $entite->setAction(null);
-            }
-        }
-
-        return $this;
-    }
-
+   
    
 }
