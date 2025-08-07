@@ -1,7 +1,8 @@
 {{ form_start(form, {
     attr: {
         class: 'needs-validation',
-        novalidate: 'novalidate'
+        novalidate: 'novalidate',
+        enctype: 'multipart/form-data'
     }
 }) }}
 
@@ -14,15 +15,24 @@
 
     <div class="card-body">
         <div class="row g-3">
-            {# Exemple de champs classiques, adaptez selon votre entité Action #}
-            <div class="mb-3">
-				{{ form_label(form.label, 'Label Action *', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-				{{ form_widget(form.label, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
-				<div class="invalid-label">
-					Ce champ est obligatoire
-				</di
-            
-            {# Ajoutez ici d'autres champs si vous en avez #}
+            <div class="col-md-6">
+                {{ form_label(form.label, 'Label Action *', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.label, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
+                <div class="invalid-feedback">
+                    Ce champ est obligatoire.
+                </div>
+            </div>
+{% if form.vars.value.logo %}
+    <div class="mb-3">
+        <label class="form-label fw-bold">Logo actuel :</label><br>
+        <img src="{{ asset('uploads/actions/' ~ form.vars.value.logo) }}" alt="Logo actuel" class="img-thumbnail" style="max-height: 120px;">
+    </div>
+{% endif %}
+            <div class="col-md-6">
+                {{ form_label(form.logo, 'Logo (PNG/JPG)', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.logo, {'attr': {'class': 'form-control'}}) }}
+                <div class="form-text">Taille max : 2 Mo. Formats autorisés : PNG, JPG</div>
+            </div>
         </div>
     </div>
 
@@ -34,6 +44,7 @@
 </div>
 
 {{ form_end(form) }}
+
 
 {% block javascripts %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	 <script>

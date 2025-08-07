@@ -1,23 +1,20 @@
-{# templates/pagination/_sortable_link.html.twig #}
-{# Custom sortable link for KnpPaginator using Bootstrap icons #}
-
-{% set isSorted = app.request.get(sortFieldParameterName) == sort %}
-{% set direction = app.request.get(sortDirectionParameterName) %}
-{% set iconClass = 'ms-1' %}
+{% set currentSort = app.request.get(sortFieldParameterName) %}
+{% set currentDirection = app.request.get(sortDirectionParameterName) %}
+{% set isSorted = currentSort == sort %}
+{% set newDirection = (isSorted and currentDirection == 'asc') ? 'desc' : 'asc' %}
 
 <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({
     (sortFieldParameterName): sort,
-    (sortDirectionParameterName): (isSorted and direction == 'asc') ? 'desc' : 'asc'
-})) }}"
-   class="text-decoration-none">
+    (sortDirectionParameterName): newDirection
+})) }}">
     {{ title }}
     {% if isSorted %}
-        {% if direction == 'asc' %}
-            <i class="bi bi-arrow-up {{ iconClass }}" aria-label="Tri ascendant"></i>
+        {% if currentDirection == 'asc' %}
+            <i class="bi bi-caret-up-fill"></i>
         {% else %}
-            <i class="bi bi-arrow-down {{ iconClass }}" aria-label="Tri descendant"></i>
+            <i class="bi bi-caret-down-fill"></i>
         {% endif %}
     {% else %}
-        <i class="bi bi-arrow-up-down {{ iconClass }} text-muted" aria-hidden="true"></i>
+        <i class="bi bi-caret-down" style="opacity: 0.3;"></i>
     {% endif %}
 </a>

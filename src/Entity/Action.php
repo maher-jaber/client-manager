@@ -30,6 +30,11 @@ class Action
     #[ORM\ManyToMany(targetEntity: ClientActionLog::class, mappedBy: 'actions')]
     private Collection $clientActionLogs;
 
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logo = null;
+    
+   
     public function __construct()
     {
         $this->clients = new ArrayCollection();
@@ -101,6 +106,16 @@ class Action
             $clientActionLog->removeAction($this);
         }
 
+        return $this;
+    }
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+    
+    public function setLogo(?string $logo): static
+    {
+        $this->logo = $logo;
         return $this;
     }
 }

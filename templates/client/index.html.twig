@@ -26,6 +26,21 @@
 			min-width: 200px;
 			text-align: left;
 		}
+		.btn-outline-primary i,
+		.btn-outline-primary img {
+			transition: transform 0.3s ease;
+		}
+
+		.btn-outline-primary:hover i,
+		.btn-outline-primary:hover img {
+			transform: scale(1.2) rotate(-5deg);
+		}
+		th a.sorted-asc::after {
+			content: ' ↑';
+		}
+		th a.sorted-desc::after {
+			content: ' ↓';
+		}
 	</style>
 {% endblock %}
 
@@ -45,7 +60,7 @@
 
 				<div class="search-container mb-4">
 					<form method="get" action="{{ path('app_client_index') }}" class="row g-3 align-items-end">
-					<div class="col-md-2">
+						<div class="col-md-2">
 							<label for="date_from" class="form-label">Dernier envoi entre (de)</label>
 							<input type="date" name="date_from" id="date_from" class="form-control" value="{{ app.request.query.get('date_from') }}">
 						</div>
@@ -64,7 +79,7 @@
 								{% endfor %}
 							</select>
 						</div>
-						
+
 						<div class="col-md-4">
 							<label for="search" class="form-label">Recherche</label>
 							<div class="input-group">
@@ -75,7 +90,7 @@
 								</button>
 							</div>
 						</div>
-						
+
 						<div class="col-md-2">
 							<a href="{{ path('app_client_index') }}" class="btn btn-outline-secondary w-100">
 								<i class="bi bi-arrow-counterclockwise"></i>
@@ -94,12 +109,54 @@
 									<thead>
 										<tr>
 											<th><input type="checkbox" id="select-all"></th>
-											<th>Dernier envoi</th>
-											<th>Nom</th>
-											<th>Commercial</th>
-											<th>Email</th>
-											<th>Cabinet</th>
-											<th>N° Contrat</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'Dernier envoi',
+				sort: 'c.dernierEnvoiMail',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'Nom',
+				sort: 'c.nomClient',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'Commercial',
+				sort: 'c.commercial',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'Email',
+				sort: 'c.email',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'Cabinet',
+				sort: 'c.telephoneCabinet',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
+											<th>
+												{% include 'pagination/_sortable_link.html.twig' with {
+				title: 'N° Contrat',
+				sort: 'c.numeroContrat',
+				sortFieldParameterName: 'sort',
+				sortDirectionParameterName: 'direction'
+			} %}
+											</th>
 											<th>Actions</th>
 										</tr>
 									</thead>
@@ -168,10 +225,27 @@
 									<div class="col-md-6">
 										<label class="form-label d-block">Appliquer les actions suivantes :</label>
 										<div class="btn-group" role="group" aria-label="Actions à appliquer">
-											{% for action in all_actions %}
-												<input type="checkbox" class="btn-check" id="action_{{ action.id }}" name="actions[]" value="{{ action.id }}" autocomplete="off">
-												<label class="btn btn-outline-primary m-1" for="action_{{ action.id }}">{{ action.label }}</label>
-											{% endfor %}
+											<div class="d-flex flex-wrap">
+												{% for action in all_actions %}
+													<input type="checkbox" class="btn-check" id="action_{{ action.id }}" name="actions[]" value="{{ action.id }}" autocomplete="off">
+
+													<label class="btn btn-outline-primary m-1 px-3 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm" for="action_{{ action.id }}" style="min-width: 180px;">
+
+														{% if action.logo %}
+															{% if action.logo starts with 'bi-' %}
+																<i class="bi {{ action.logo }} fs-5 text-primary"></i>
+															{% else %}
+																<img src="{{ asset('uploads/actions/' ~ action.logo) }}" alt="{{ action.label }}" class="img-fluid" style="height: 24px; width: auto;">
+															{% endif %}
+														{% else %}
+															<i class="bi bi-question-circle-fill text-muted fs-5"></i>
+														{% endif %}
+
+														<span class="flex-grow-1 text-truncate">{{ action.label }}</span>
+													</label>
+												{% endfor %}
+											</div>
+
 										</div>
 									</div>
 									<div class="col-md-3">
@@ -196,14 +270,14 @@
 
 {% block javascripts %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	 <script>
-				document.addEventListener('DOMContentLoaded', function () {
-					const selectAllCheckbox = document.getElementById('select-all');
-					if (selectAllCheckbox) {
-						selectAllCheckbox.addEventListener('change', function () {
-							const checkboxes = document.querySelectorAll('input[name="clients[]"]');
-							checkboxes.forEach(cb => cb.checked = this.checked);
-						});
-					}
-				});
-			</script>
+											document.addEventListener('DOMContentLoaded', function () {
+												const selectAllCheckbox = document.getElementById('select-all');
+												if (selectAllCheckbox) {
+													selectAllCheckbox.addEventListener('change', function () {
+														const checkboxes = document.querySelectorAll('input[name="clients[]"]');
+														checkboxes.forEach(cb => cb.checked = this.checked);
+													});
+												}
+											});
+										</script>
 {% endblock %}

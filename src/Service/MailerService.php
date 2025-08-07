@@ -30,8 +30,9 @@ class MailerService
         $this->fromName = $fromName;
     }
 
-    public function sendMail(string $toEmail, string $toName, string $subject, string $body): bool
+    public function sendMail(string $toEmail, string $toName, string $subject, string $body, string $entite = 'IDS'): bool
     {
+        $sender = $this->getSenderConfig($entite);
         $mail = new PHPMailer(true);
 
         try {
@@ -56,7 +57,7 @@ class MailerService
                 $mail->SMTPSecure = false;
             }
 
-            $mail->setFrom($this->fromEmail, $this->fromName);
+            $mail->setFrom($sender['email'], $sender['name']);
             $mail->addAddress($toEmail, $toName);
 
             $mail->isHTML(true);
@@ -70,5 +71,22 @@ class MailerService
             error_log('Mailer Error: ' . $mail->ErrorInfo); // Pour debug
             return false;
         }
+    }
+    private function getSenderConfig(string $entite): array
+    {
+        return match (strtolower($entite)) {
+            'altra' => [
+                'email' => 'GroupeAltraSystems@altra-systems.com',
+                'name' => 'Altra System',
+            ],
+            'ids' => [
+                'email' => 'info@ids.tn',
+                'name' => 'IDS Group',
+            ],
+            default => [
+                'email' => 'default@example.com',
+                'name' => 'Default Sender',
+            ]
+        };
     }
 }

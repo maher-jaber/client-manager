@@ -46,19 +46,19 @@ final class ClientController extends AbstractController
             if ($from) {
                 $from->setTime(00, 00, 00);
                 $queryBuilder->andWhere('c.dernierEnvoiMail >= :fromDate')
-                             ->setParameter('fromDate', $from)
-                             ->orderBy('c.dernierEnvoiMail', 'ASC');
+                    ->setParameter('fromDate', $from)
+                    ->orderBy('c.dernierEnvoiMail', 'ASC');
             }
         }
-        
+
         if ($dateTo = $request->query->get('date_to')) {
             $to = \DateTime::createFromFormat('Y-m-d', $dateTo);
             if ($to) {
                 // Ajouter 1 jour pour inclure toute la journée sélectionnée
                 $to->setTime(23, 59, 59);
                 $queryBuilder->andWhere('c.dernierEnvoiMail <= :toDate')
-                             ->setParameter('toDate', $to)
-                             ->orderBy('c.dernierEnvoiMail', 'ASC');
+                    ->setParameter('toDate', $to)
+                    ->orderBy('c.dernierEnvoiMail', 'ASC');
             }
         }
         // Récupération des commerciaux distincts
@@ -75,7 +75,11 @@ final class ClientController extends AbstractController
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
-            10
+            10,
+            [
+                'defaultSortFieldName' => 'c.nomClient',
+                'defaultSortDirection' => 'asc',
+            ]
         );
         $allActions = $actionRepo->findAll();
         return $this->render('client/index.html.twig', [
@@ -130,12 +134,11 @@ final class ClientController extends AbstractController
             $removed = [];
 
             foreach ($actions as $a) {
-                
-                    $added[] = $a->getLabel();
-                
+
+                $added[] = $a;
             }
 
-           
+
 
             if (!empty($added)) {
                 $htmlBody = $this->renderView('emails/actions_update.html.twig', [
@@ -160,7 +163,7 @@ final class ClientController extends AbstractController
 
 
             foreach ($actions as $action) {
-            $log->addAction($action);
+                $log->addAction($action);
             }
 
             $em->persist($log);
@@ -215,7 +218,7 @@ final class ClientController extends AbstractController
             if (count($selectedActions) > 0) {
                 $htmlBody = $this->renderView('emails/actions_update.html.twig', [
                     'client' => $client,
-                    'added' => array_map(fn($a) => $a->getLabel(), iterator_to_array($selectedActions)),
+                    'added' => array_map(fn($a) => $a, iterator_to_array($selectedActions)),
                     'removed' => [], // aucune suppression dans ce modèle
                 ]);
                 $mailerService->sendMail(
