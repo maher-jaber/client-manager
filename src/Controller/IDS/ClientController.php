@@ -26,7 +26,7 @@ final class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index')]
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, ActionRepository $actionRepo, Request $request): Response
     {
-        if (!$this->getUser()->hasPermission('client', 'list')) {
+        if (!$this->getUser()->hasPermission('IDS => Client : List')) {
             throw $this->createAccessDeniedException();
         }
         $queryBuilder = $em->getRepository(Client::class)
@@ -179,7 +179,7 @@ final class ClientController extends AbstractController
     #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->getUser()->hasPermission('client', 'create')) {
+        if (!$this->getUser()->hasPermission('IDS => Client : Create')) {
             throw $this->createAccessDeniedException();
         }
         $client = new Client();
@@ -214,7 +214,7 @@ final class ClientController extends AbstractController
         $user = $this->getUser();
 
         // Vérifie que l'utilisateur a la permission 'edit' sur l'entité 'client'
-        if (!$user->hasPermission('client', 'edit')) {
+        if (!$user->hasPermission('IDS => Client : Edit')) {
             throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
         }
 
@@ -276,7 +276,7 @@ final class ClientController extends AbstractController
     #[Route('/{id}', name: 'app_client_delete', methods: ['POST'])]
     public function delete(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->getUser()->hasPermission('client', 'delete')) {
+        if (!$this->getUser()->hasPermission('IDS => Client : Delete')) {
             throw $this->createAccessDeniedException();
         }
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
@@ -292,7 +292,7 @@ final class ClientController extends AbstractController
     #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
     public function show(Request $request, Client $client): Response
     {
-        if (!$this->getUser()->hasPermission('client', 'view')) {
+        if (!$this->getUser()->hasPermission('IDS => Client : View')) {
             throw $this->createAccessDeniedException();
         }
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');

@@ -18,7 +18,7 @@ final class ClientActionLogController extends AbstractController
     #[Route(name: 'app_client_action_log_index', methods: ['GET'])]
     public function index(Request $request,ClientActionLogRepository $clientActionLogRepository,PaginatorInterface $paginator): Response
     {
-        if (!$this->getUser()->hasPermission('log', 'list')) {
+        if (!$this->getUser()->hasPermission('IDS => Log : List')) {
             throw $this->createAccessDeniedException();
         }
         $qb = $clientActionLogRepository->createQueryBuilder('l');

@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ user.id ? 'Modifier un utilisateur' : 'Créer un utilisateur' }}
+	{{ user.id ? 'Modifier un utilisateur' : 'Créer un utilisateur' }}
 {% endblock %}
 
 {% block body %}
 <style>
-.form-check {
-    margin-bottom: 0.5rem; /* espace sous chaque checkbox */
-}
+	.form-check {
+		margin-bottom: 0.5rem; /* espace sous chaque checkbox */
+	}
 </style>
 {% include 'layout-global.html.twig' %}
 <div class="container mt-4">
-    <h1 class="mb-4">
-        {{ user.id ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}
+	<h1 class="mb-4">
+		{{ user.id ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}
     </h1>
 
     <div class="card shadow-sm">
@@ -36,18 +36,65 @@
                     {{ form_widget(form.password, { 'attr': {'class': 'form-control'} }) }}
                     {{ form_errors(form.password) }}
                 </div>
-                 <div class="mb-3">
-    {{ form_label(form.permissions) }}
-    <div>
-        {% for checkbox in form.permissions %}
-            <div class="form-check mb-2">
-                {{ form_widget(checkbox, {'attr': {'class': 'form-check-input'}}) }}
-                {{ form_label(checkbox, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                <div class="mb-3">
+                {% set grouped = {} %}
+{% for checkbox in form.permissions %}
+    {% set labelParts = checkbox.vars.label|split('=>') %}
+    {% set company = labelParts[0]|trim %}
+    {% set rest = labelParts[1]|split(' : ') %}
+    {% set entity = rest[0]|trim %}
+    
+    {% if grouped[company] is not defined %}
+        {% set grouped = grouped|merge({ (company): {} }) %}
+    {% endif %}
+    
+    {% if grouped[company][entity] is not defined %}
+        {% set grouped = grouped|merge({ 
+            (company): grouped[company]|merge({ (entity): [] }) 
+        }) %}
+    {% endif %}
+
+    {% set grouped = grouped|merge({
+        (company): grouped[company]|merge({
+            (entity): grouped[company][entity]|merge([checkbox])
+        })
+    }) %}
+{% endfor %}
+<div class="accordion" id="accordionPermissions">
+    {% set accordionIndex = 0 %}
+    {% for company, entities in grouped %}
+        {% set companyId = 'company-' ~ accordionIndex %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-{{ companyId }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ companyId }}" aria-expanded="false" aria-controls="collapse-{{ companyId }}">
+                    {{ company }}
+                </button>
+            </h2>
+            <div id="collapse-{{ companyId }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ companyId }}" data-bs-parent="#accordionPermissions">
+                <div class="accordion-body">
+                    {% for entity, checkboxes in entities %}
+                        <div class="mb-3 border-bottom pb-2">
+                            <strong>{{ entity }}</strong>
+                            <div class="row">
+                                {% for checkbox in checkboxes %}
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            {{ form_widget(checkbox, {'attr': {'class': 'form-check-input'}}) }}
+                                            {{ form_label(checkbox, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        {% endfor %}
-    </div>
-    {{ form_errors(form.permissions) }}
+        </div>
+        {% set accordionIndex = accordionIndex + 1 %}
+    {% endfor %}
 </div>
+</div>
+
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ path('admin_user_index') }}" class="btn btn-secondary">

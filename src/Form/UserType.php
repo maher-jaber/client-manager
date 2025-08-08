@@ -36,8 +36,8 @@ class UserType extends AbstractType
             ])
             ->add('permissions', EntityType::class, [
                 'class' => Permission::class,
-                'choice_label' => function(Permission $p) {
-                    return ucfirst($p->getEntity()) . ' : ' . ucfirst($p->getAction());
+                'choice_label' => function (Permission $p) {
+                    return $p->getEntreprise()?->getLabel() . ' => ' . $p->getEntity() . ' : ' . ucfirst($p->getAction());
                 },
                 'multiple' => true,
                 'expanded' => true,
@@ -53,4 +53,3 @@ class UserType extends AbstractType
         ]);
     }
 }
-

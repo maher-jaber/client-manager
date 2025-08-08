@@ -46,6 +46,14 @@ class Society
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'entite')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Permission>
+     */
+    #[ORM\OneToMany(targetEntity: Permission::class, mappedBy: 'Entreprise')]
+    private Collection $permissions;
+
+    
+
     public function __construct()
     {
         
@@ -53,6 +61,7 @@ class Society
         $this->actions = new ArrayCollection();
         $this->clientActionLogs = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -72,7 +81,10 @@ class Society
         return $this;
     }
    
-
+   public function __toString()
+   {
+    return $this->label;
+   }
    
 
     /**
@@ -191,4 +203,36 @@ class Society
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Permission>
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function addPermission(Permission $permission): static
+    {
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions->add($permission);
+            $permission->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removePermission(Permission $permission): static
+    {
+        if ($this->permissions->removeElement($permission)) {
+            // set the owning side to null (unless already changed)
+            if ($permission->getEntreprise() === $this) {
+                $permission->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+ 
 }

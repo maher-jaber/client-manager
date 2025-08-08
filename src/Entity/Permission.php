@@ -27,9 +27,15 @@ class Permission
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'permissions')]
     private Collection $users;
 
+    #[ORM\ManyToOne(inversedBy: 'permissions')]
+    private ?Society $Entreprise = null;
+
+  
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        
     }
 
     
@@ -89,6 +95,20 @@ class Permission
 
         return $this;
     }
+
+    public function getEntreprise(): ?Society
+    {
+        return $this->Entreprise;
+    }
+
+    public function setEntreprise(?Society $Entreprise): static
+    {
+        $this->Entreprise = $Entreprise;
+
+        return $this;
+    }
+
+   
 
 
 }

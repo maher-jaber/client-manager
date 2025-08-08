@@ -174,16 +174,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function hasPermission(string $entity, string $action): bool
+    public function hasPermission(string $label): bool
     {
         foreach ($this->permissions as $permission) {
-            if (
-                $permission->getEntity() === $entity &&
-                $permission->getAction() === $action
-            ) {
+            $currentLabel = ucfirst($permission->getEntreprise()?->getLabel() ?? 'Aucune entreprise')
+                . ' => ' . ucfirst($permission->getEntity())
+                . ' : ' . ucfirst($permission->getAction());
+    
+            if ($currentLabel === $label) {
                 return true;
             }
         }
+    
         return false;
     }
 
