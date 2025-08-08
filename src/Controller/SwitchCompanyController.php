@@ -25,7 +25,7 @@ class SwitchCompanyController extends AbstractController
         if ($company === 'ids') {
             return $this->redirectToRoute('app_client_index');
         } elseif ($company === 'altra') {
-            return $this->redirectToRoute('app_dashboard_altra');
+            return $this->redirectToRoute('app_client_index_altra');
         }
 
         return $this->redirectToRoute('switch_company');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\IDS;
+namespace App\Controller\Altra;
 
 use App\Entity\Action;
 use App\Entity\Society;
@@ -15,22 +15,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/dashboard/ids/action')]
-final class ActionController extends AbstractController
+#[Route('/dashboard/altra/action')]
+final class ActionAltraController extends AbstractController
 {
-    #[Route('/', name: 'app_action_index', methods: ['GET'])]
+    #[Route('/', name: 'app_action_index_altra', methods: ['GET'])]
     public function index(EntityManagerInterface $em, Request $request, ActionRepository $actionRepository, PaginatorInterface $paginator): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Action : List')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Action : List')) {
             throw $this->createAccessDeniedException();
         }
         $societyRepo = $em->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
 
         $search = $request->query->get('search');
         $qb = $actionRepository->createQueryBuilder('a')
-            ->andWhere('a.entite = :ids')
-            ->setParameter('ids', $ids->getId());
+            ->andWhere('a.entite = :altra')
+            ->setParameter('altra', $altra->getId());
 
         if ($search) {
             $qb->where('a.label LIKE :search')
@@ -45,15 +45,15 @@ final class ActionController extends AbstractController
             5
         );
 
-        return $this->render('IDS/action/index.html.twig', [
+        return $this->render('ALTRA/action/index.html.twig', [
             'pagination' => $pagination,
         ]);
     }
 
-    #[Route('/new', name: 'app_action_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_action_new_altra', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Action : Create')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Action : Create')) {
             throw $this->createAccessDeniedException();
         }
         $action = new Action();
@@ -62,13 +62,13 @@ final class ActionController extends AbstractController
 
 
         $societyRepo = $em->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
 
 
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $action->setEntite($ids);
+            $action->setEntite($altra);
 
             $logoFile = $form->get('logo')->getData();
 
@@ -92,34 +92,34 @@ final class ActionController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Action créée avec succès.');
-            return $this->redirectToRoute('app_action_index');
+            return $this->redirectToRoute('app_action_index_altra');
         }
 
-        return $this->render('IDS/action/new.html.twig', [
+        return $this->render('ALTRA/action/new.html.twig', [
             'action' => $action,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_action_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_action_show_altra', methods: ['GET'])]
     public function show(Action $action): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Action : View')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Action : View')) {
             throw $this->createAccessDeniedException();
         }
-        return $this->render('IDS/action/show.html.twig', [
+        return $this->render('ALTRA/action/show.html.twig', [
             'action' => $action,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_action_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_action_edit_altra', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         Action $action,
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): Response {
-        if (!$this->getUser()->hasPermission('IDS => Action : Delete')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Action : Delete')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -155,19 +155,19 @@ final class ActionController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Action mise à jour avec succès.');
-            return $this->redirectToRoute('app_action_index');
+            return $this->redirectToRoute('app_action_index_altra');
         }
 
-        return $this->render('IDS/action/edit.html.twig', [
+        return $this->render('ALTRA/action/edit.html.twig', [
             'action' => $action,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_action_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_action_delete_altra', methods: ['POST'])]
     public function delete(Request $request, Action $action, EntityManagerInterface $em): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Action : Delete')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Action : Delete')) {
             throw $this->createAccessDeniedException();
         }
         if ($this->isCsrfTokenValid('delete' . $action->getId(), $request->getPayload()->getString('_token'))) {
@@ -183,6 +183,6 @@ final class ActionController extends AbstractController
             $this->addFlash('success', 'Action supprimée.');
         }
 
-        return $this->redirectToRoute('app_action_index');
+        return $this->redirectToRoute('app_action_index_altra');
     }
 }

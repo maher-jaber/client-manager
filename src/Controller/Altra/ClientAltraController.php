@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\IDS;
+namespace App\Controller\Altra;
 
 use App\Entity\Client;
 use App\Entity\ClientActionLog;
@@ -21,24 +21,24 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
 
-#[Route('/dashboard/ids/client')]
-final class ClientController extends AbstractController
+#[Route('/dashboard/altra/client')]
+final class ClientAltraController extends AbstractController
 {
-    #[Route('/', name: 'app_client_index')]
+    #[Route('/', name: 'app_client_index_altra')]
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, ActionRepository $actionRepo, Request $request): Response
     {
 
 
-        if (!$this->getUser()->hasPermission('IDS => Client : List')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Client : List')) {
             throw $this->createAccessDeniedException();
         }
         $societyRepo = $em->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
         
         $queryBuilder = $em->getRepository(Client::class)
             ->createQueryBuilder('c')
             ->andWhere('c.entite = :ids')
-            ->setParameter('ids', $ids->getId())
+            ->setParameter('ids', $altra->getId())
             ->orderBy('c.nomClient', 'ASC');
 
         // Filtre par commercial
@@ -89,7 +89,7 @@ final class ClientController extends AbstractController
             10
         );
         $allActions = $actionRepo->findAll();
-        return $this->render('IDS/client/index.html.twig', [
+        return $this->render('ALTRA/client/index.html.twig', [
             'pagination' => $pagination,
             'commerciaux' => $commerciaux,
             'all_actions' => $allActions,
@@ -98,7 +98,7 @@ final class ClientController extends AbstractController
 
 
 
-    #[Route('/bulk-actions', name: 'app_client_bulk_actions', methods: ['POST'])]
+    #[Route('/bulk-actions', name: 'app_client_bulk_actions_altra', methods: ['POST'])]
     public function bulkActions(
         Request $request,
         ClientRepository $clientRepo,
@@ -109,7 +109,7 @@ final class ClientController extends AbstractController
 
 
         
-        if (!$this->getUser()->hasPermission('IDS => Client : Bulk_action')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Client : Bulk_action')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -119,13 +119,13 @@ final class ClientController extends AbstractController
         // ✅ Vérification : aucun client sélectionné
         if (empty($clientIds)) {
             $this->addFlash('warning', 'Veuillez sélectionner au moins un client.');
-            return $this->redirectToRoute('app_client_index');
+            return $this->redirectToRoute('app_client_index_altra');
         }
 
         // ✅ Vérification : aucune action sélectionnée
         if (empty($actionIds)) {
             $this->addFlash('warning', 'Veuillez sélectionner au moins une action à appliquer.');
-            return $this->redirectToRoute('app_client_index');
+            return $this->redirectToRoute('app_client_index_altra');
         }
 
         $actions = $actionRepo->findBy(['id' => $actionIds]);
@@ -137,10 +137,10 @@ final class ClientController extends AbstractController
         if (!empty($clientsWithoutEmail)) {
             $noms = array_map(fn(Client $c) => $c->getNomClient(), $clientsWithoutEmail);
             $this->addFlash('danger', 'Aucun email envoyé : les clients suivants n\'ont pas d\'adresse email : ' . implode(', ', $noms));
-            return $this->redirectToRoute('app_client_index');
+            return $this->redirectToRoute('app_client_index_altra');
         }
         $societyRepo = $em->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
 
         // Tous les clients ont un email → on peut continuer
         foreach ($clients as $client) {
@@ -157,7 +157,7 @@ final class ClientController extends AbstractController
 
 
             if (!empty($added)) {
-                $htmlBody = $this->renderView('IDS/emails/actions_update.html.twig', [
+                $htmlBody = $this->renderView('ALTRA/emails/actions_update.html.twig', [
                     'client' => $client,
                     'added' => $added,
                     'removed' => $removed,
@@ -174,7 +174,7 @@ final class ClientController extends AbstractController
             $log->setPerformedAt(new \DateTime());
             $log->setPerformedBy($this->getUser()?->getUserIdentifier() ?? 'system');
 
-            $log->setEntite($ids);
+            $log->setEntite($altra);
             $log->addClient($client);
 
 
@@ -189,14 +189,14 @@ final class ClientController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Actions mises à jour pour les clients sélectionnés.');
-        return $this->redirectToRoute('app_client_index');
+        return $this->redirectToRoute('app_client_index_altra');
     }
 
 
-    #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_client_new_altra', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Client : Create')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Client : Create')) {
             throw $this->createAccessDeniedException();
         }
         $client = new Client();
@@ -204,27 +204,27 @@ final class ClientController extends AbstractController
         $form->handleRequest($request);
 
         // Récupère l'URL précédente (page liste par défaut)
-        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
+        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index_altra');
 
         $societyRepo = $entityManager->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $client->setEntite($ids);
+            $client->setEntite($altra);
             $entityManager->persist($client);
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_client_index');
+            return $this->redirectToRoute('app_client_index_altra');
         }
 
-        return $this->render('IDS/client/new.html.twig', [
+        return $this->render('ALTRA/client/new.html.twig', [
             'client' => $client,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_client_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_client_edit_altra', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         Client $client,
@@ -234,7 +234,7 @@ final class ClientController extends AbstractController
 
         $user = $this->getUser();
         // Vérifie que l'utilisateur a la permission 'edit' sur l'entité 'client'
-        if (!$user->hasPermission('IDS => Client : Edit')) {
+        if (!$user->hasPermission('ALTRA => Client : Edit')) {
             throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
         }
         $form = $this->createForm(ClientType::class, $client);
@@ -246,7 +246,7 @@ final class ClientController extends AbstractController
 
             // Envoyer l’email s’il y a des actions sélectionnées
             if (count($selectedActions) > 0) {
-                $htmlBody = $this->renderView('IDS/emails/actions_update.html.twig', [
+                $htmlBody = $this->renderView('ALTRA/emails/actions_update.html.twig', [
                     'client' => $client,
                     'added' => array_map(fn($a) => $a, iterator_to_array($selectedActions)),
                     'removed' => [], // aucune suppression dans ce modèle
@@ -275,10 +275,10 @@ final class ClientController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_client_index');
+            return $this->redirectToRoute('app_client_index_altra');
         }
 
-        return $this->render('IDS/client/edit.html.twig', [
+        return $this->render('ALTRA/client/edit.html.twig', [
             'client' => $client,
             'form' => $form->createView(),
         ]);
@@ -286,31 +286,31 @@ final class ClientController extends AbstractController
 
 
 
-    #[Route('/{id}', name: 'app_client_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_client_delete_altra', methods: ['POST'])]
     public function delete(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Client : Delete')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Client : Delete')) {
             throw $this->createAccessDeniedException();
         }
-        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
+        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index_altra');
 
         if ($this->isCsrfTokenValid('delete' . $client->getId(), $request->request->get('_token'))) {
             $entityManager->remove($client);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_client_index');
+        return $this->redirect($referer);
     }
 
-    #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_client_show_altra', methods: ['GET'])]
     public function show(Request $request, Client $client): Response
     {
-        if (!$this->getUser()->hasPermission('IDS => Client : View')) {
+        if (!$this->getUser()->hasPermission('ALTRA => Client : View')) {
             throw $this->createAccessDeniedException();
         }
-        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
+        $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index_altra');
 
-        return $this->render('IDS/client/show.html.twig', [
+        return $this->render('ALTRA/client/show.html.twig', [
             'client' => $client,
             'referer' => $referer,
         ]);
@@ -325,13 +325,13 @@ final class ClientController extends AbstractController
         EntityManagerInterface $em,
     ): void {
         $societyRepo = $em->getRepository(Society::class);
-        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
 
         $log = new ClientActionLog();
         $log->setPerformedAt(new \DateTime());
         $log->setPerformedBy($performedBy);
         $log->setNote($note);
-        $log->setEntite($ids);
+        $log->setEntite($altra);
 
         foreach ($clients as $client) {
             $log->addClient($client);

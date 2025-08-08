@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Modification des actions</title>
+		<style>
+			body {
+				background-color: #f4f6f9;
+				font-family: 'Segoe UI', Roboto, sans-serif;
+				margin: 0;
+				padding: 0;
+				color: #333;
+			}
+
+			.container {
+				max-width: 620px;
+				margin: 30px auto;
+				background: #ffffff;
+				border-radius: 10px;
+				overflow: hidden;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			}
+
+			.header {
+				background-color: #003366;
+				color: #ffffff;
+				padding: 30px 20px;
+				text-align: center;
+			}
+
+			.header h1 {
+				margin: 0;
+				font-size: 26px;
+				letter-spacing: 1px;
+			}
+
+			.content {
+				padding: 30px 25px;
+			}
+
+			.content h2 {
+				font-size: 20px;
+				margin-top: 0;
+			}
+
+			.content p {
+				font-size: 16px;
+				line-height: 1.6;
+			}
+
+			.action-list {
+				list-style: none;
+				padding-left: 0;
+			}
+
+			.action-item {
+				background-color: #e6f4ea;
+				color: #155724;
+				padding: 10px 15px;
+				border-radius: 20px;
+				display: inline-block;
+				margin: 6px 6px 6px 0;
+				font-size: 14px;
+				font-weight: 500;
+			}
+
+			.section-title {
+				color: #28a745;
+				font-size: 17px;
+				margin-top: 30px;
+				display: flex;
+				align-items: center;
+			}
+
+			.section-title img {
+				width: 20px;
+				height: 20px;
+				margin-right: 8px;
+			}
+
+			.footer {
+				background-color: #f0f2f5;
+				text-align: center;
+				padding: 15px;
+				font-size: 13px;
+				color: #777;
+			}
+
+			.footer a {
+				color: #003366;
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>IDS groupe</h1>
+			</div>
+			<div class="content">
+				<h2>Bonjour
+					{{ client.nomClient }},</h2>
+				<p>
+					Nous vous informons que de nouvelles actions ont été associées à votre dossier.
+					                Voici les modifications récentes :
+				</p>
+
+				{% if added %}
+					<div>
+						<h3 class="section-title">
+							<img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Ajouté">
+							Nouvelles actions ajoutées
+						</h3>
+						<ul class="action-list">
+							{% for action in added %}
+								<li class="action-item">
+									{% if action.logo is defined and action.logo is not null %}
+										{% if action.logo starts with 'bi-' %}
+											<i class="bi {{ action.logo }}"></i>
+										{% else %}
+											<img src="{{ absolute_url(asset('uploads/actions/' ~ action.logo)) }}" alt="logo" style="height: 16px; vertical-align: middle; margin-right: 6px;">
+
+										{% endif %}
+									{% endif %}
+									{{ action.label }}
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+
+				<p style="margin-top: 30px;">
+					Si vous avez la moindre question, notre équipe reste à votre disposition.
+				</p>
+
+				<p>
+					Bien cordialement,<br>
+					<strong>L’équipe IDS Groupe</strong>
+				</p>
+			</div>
+			<div class="footer">
+				©
+				{{ "now"|date("Y") }}
+				<a href="https://ids-groupe.com">ids-groupe.com</a>
+				– Tous droits réservés.
+			</div>
+		</div>
+	</body>
+</html>

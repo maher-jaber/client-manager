@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ClientActionLog{% endblock %}
+
+{% block body %}
+    <h1>Create new ClientActionLog</h1>
+
+    {{ include('client_action_log/_form.html.twig') }}
+
+    <a href="{{ path('app_client_action_log_index') }}">back to list</a>
+{% endblock %}

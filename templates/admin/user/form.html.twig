@@ -31,11 +31,24 @@
                     {{ form_errors(form.roles) }}
                 </div>
 
-                <div class="mb-3">
-                    {{ form_label(form.password) }}
-                    {{ form_widget(form.password, { 'attr': {'class': 'form-control'} }) }}
-                    {{ form_errors(form.password) }}
-                </div>
+           <div class="mb-3 position-relative">
+           {% set passwordId = form.password.vars.id %}
+    {{ form_label(form.password) }}
+    
+    <div class="input-group">
+        {{ form_widget(form.password, {
+    'attr': {
+        'class': 'form-control',
+        'id': passwordId
+    }
+}) }}
+        <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+            <i class="bi bi-eye" id="toggleIcon"></i>
+        </button>
+    </div>
+
+    {{ form_errors(form.password) }}
+</div>
                 <div class="mb-3">
                 {% set grouped = {} %}
 {% for checkbox in form.permissions %}
@@ -114,4 +127,21 @@
         </div>
     </div>
 </div>
+{# Script pour toggle visibilité #}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordField = document.getElementById('{{ form.password.vars.id }}');
+        const toggle = document.getElementById('togglePassword');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (passwordField && toggle && toggleIcon) {
+            toggle.addEventListener('click', function () {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                toggleIcon.classList.toggle('bi-eye');
+                toggleIcon.classList.toggle('bi-eye-slash');
+            });
+        }
+    });
+</script>
 {% endblock %}
