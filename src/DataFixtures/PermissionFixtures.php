@@ -42,6 +42,12 @@ class PermissionFixtures extends Fixture
        
         $manager->persist($permission);
 
+        $permission = new Permission();
+        $permission->setEntity('client');
+        $permission->setAction('bulk_action');
+        $permission->setEntreprise($ids);
+       
+        $manager->persist($permission);
 
         // for altra 
 
@@ -61,7 +67,13 @@ class PermissionFixtures extends Fixture
         
         $permission->setEntreprise($altra);
         $manager->persist($permission);
-
+        $permission = new Permission();
+        
+        $permission->setEntity('client');
+        $permission->setAction('bulk_action');
+        $permission->setEntreprise($ids);
+       
+        $manager->persist($permission);
 
         $manager->flush();
     }

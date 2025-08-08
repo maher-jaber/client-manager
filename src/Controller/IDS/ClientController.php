@@ -98,6 +98,13 @@ final class ClientController extends AbstractController
         EntityManagerInterface $em,
         MailerService $mailerService
     ): Response {
+
+
+        
+        if (!$this->getUser()->hasPermission('IDS => client : Bulk_action')) {
+            throw $this->createAccessDeniedException();
+        }
+
         $clientIds = $request->request->all('clients');
         $actionIds = $request->request->all('actions');
 

@@ -106,164 +106,167 @@
 				<div class="card shadow-sm border-0">
 					<div class="card-body p-0">
 						<div class="table-responsive">
-							
-								<table class="table table-bordered table-hover align-middle mb-0">
-									<thead>
-										<tr>
-											<th><input type="checkbox" id="select-all"></th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+
+							<table class="table table-bordered table-hover align-middle mb-0">
+								<thead>
+									<tr>
+										<th><input type="checkbox" id="select-all"></th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'Dernier envoi',
 				sort: 'c.dernierEnvoiMail',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+										</th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'Nom',
 				sort: 'c.nomClient',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+										</th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'Commercial',
 				sort: 'c.commercial',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+										</th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'Email',
 				sort: 'c.email',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+										</th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'Cabinet',
 				sort: 'c.telephoneCabinet',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>
-												{% include 'pagination/_sortable_link.html.twig' with {
+										</th>
+										<th>
+											{% include 'pagination/_sortable_link.html.twig' with {
 				title: 'N° Contrat',
 				sort: 'c.numeroContrat',
 				sortFieldParameterName: 'sort',
 				sortDirectionParameterName: 'direction'
 			} %}
-											</th>
-											<th>Actions</th>
-										</tr>
-									</thead>
-									<tbody>
-										{% for client in pagination %}
-											<tr>
-												<td><input type="checkbox" name="clients[]" value="{{ client.id }}" form="bulk-form"></td>
-												<td>
-													{{ client.dernierEnvoiMail ? client.dernierEnvoiMail|date('d/m/Y H:i') : 'Jamais' }}
-												</td>
-												<td>{{ client.nomClient }}</td>
-												<td>{{ client.commercial }}</td>
-												<td>{{ client.email }}</td>
-												<td>{{ client.telephoneCabinet }}</td>
-												<td>{{ client.numeroContrat }}</td>
-												<td class="text-nowrap">
-													{% if app.user and app.user.hasPermission('IDS => Client : View') %}
-														<a href="{{ path('app_client_show', {id: client.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
-															<i class="bi bi-eye"></i>
-														</a>
-													{% endif %}
-													{% if app.user and app.user.hasPermission('IDS => Client : Edit') %}
-														<a href="{{ path('app_client_edit', {id: client.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
-															<i class="bi bi-pencil"></i>
-														</a>
-													{% endif %}
-													{% if app.user and app.user.hasPermission('IDS => Client : Delete') %}
-														<!-- Bouton suppression -->
-														<button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ client.id }}" title="Supprimer">
-															<i class="bi bi-trash"></i>
-														</button>
+										</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for client in pagination %}
+										<tr>
+											<td><input type="checkbox" name="clients[]" value="{{ client.id }}" form="bulk-form"></td>
+											<td>
+												{{ client.dernierEnvoiMail ? client.dernierEnvoiMail|date('d/m/Y H:i') : 'Jamais' }}
+											</td>
+											<td>{{ client.nomClient }}</td>
+											<td>{{ client.commercial }}</td>
+											<td>{{ client.email }}</td>
+											<td>{{ client.telephoneCabinet }}</td>
+											<td>{{ client.numeroContrat }}</td>
+											<td class="text-nowrap">
+												{% if app.user and app.user.hasPermission('IDS => Client : View') %}
+													<a href="{{ path('app_client_show', {id: client.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+														<i class="bi bi-eye"></i>
+													</a>
+												{% endif %}
+												{% if app.user and app.user.hasPermission('IDS => Client : Edit') %}
+													<a href="{{ path('app_client_edit', {id: client.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+														<i class="bi bi-pencil"></i>
+													</a>
+												{% endif %}
+												{% if app.user and app.user.hasPermission('IDS => Client : Delete') %}
+													<!-- Bouton suppression -->
+													<button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ client.id }}" title="Supprimer">
+														<i class="bi bi-trash"></i>
+													</button>
 
-														<!-- Modal suppression -->
-														<div class="modal fade" id="deleteModal{{ client.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ client.id }}" aria-hidden="true">
-															<div class="modal-dialog modal-dialog-centered">
-																<div class="modal-content">
-																	<div class="modal-header bg-danger text-white">
-																		<h5 class="modal-title" id="deleteModalLabel{{ client.id }}">Confirmer la suppression</h5>
-																		<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-																	</div>
-																	<div class="modal-body">
-																		Êtes-vous sûr de vouloir supprimer le client
-																		<br><strong>{{ client.nomClient }}</strong>
-																		?
-																		<br>
-																		Cette action est irréversible.
-																	</div>
-																	<div class="modal-footer">
-																		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-																		<form method="post" action="{{ path('app_client_delete', {'id': client.id}) }}" style="display:inline-block;">
-																			<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
-																			<button type="submit" class="btn btn-danger">Supprimer</button>
-																		</form>
-																	</div>
+													<!-- Modal suppression -->
+													<div class="modal fade" id="deleteModal{{ client.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ client.id }}" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered">
+															<div class="modal-content">
+																<div class="modal-header bg-danger text-white">
+																	<h5 class="modal-title" id="deleteModalLabel{{ client.id }}">Confirmer la suppression</h5>
+																	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+																</div>
+																<div class="modal-body">
+																	Êtes-vous sûr de vouloir supprimer le client
+																	<br><strong>{{ client.nomClient }}</strong>
+																	?
+																	<br>
+																	Cette action est irréversible.
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+																	<form method="post" action="{{ path('app_client_delete', {'id': client.id}) }}" style="display:inline-block;">
+																		<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+																		<button type="submit" class="btn btn-danger">Supprimer</button>
+																	</form>
 																</div>
 															</div>
 														</div>
-													{% endif %}
+													</div>
+												{% endif %}
 
-												</td>
+											</td>
 
-											</tr>
-										{% else %}
-											<tr>
-												<td colspan="8" class="text-center">Aucun client trouvé</td>
-											</tr>
-										{% endfor %}
-									</tbody>
-								</table>
-								<form  id="bulk-form" method="POST" action="{{ path('app_client_bulk_actions') }}">
-								<div class="d-flex justify-content-between align-items-center p-3 border-top">
-									<div class="col-md-9">
-										<label class="form-label d-block">Appliquer les actions suivantes :</label>
-										<div class="btn-group" role="group" aria-label="Actions à appliquer">
-											<div class="d-flex flex-wrap">
-												{% for action in all_actions %}
-													<input type="checkbox" class="btn-check" id="action_{{ action.id }}" name="actions[]" value="{{ action.id }}" autocomplete="off">
+										</tr>
+									{% else %}
+										<tr>
+											<td colspan="8" class="text-center">Aucun client trouvé</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+							{% if app.user and app.user.hasPermission('IDS => Client : Bulk_action') %}
 
-													<label class="btn btn-outline-primary m-1 px-3 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm" for="action_{{ action.id }}" style="min-width: 180px;">
+								<form id="bulk-form" method="POST" action="{{ path('app_client_bulk_actions') }}">
+									<div class="d-flex justify-content-between align-items-center p-3 border-top">
+										<div class="col-md-9">
+											<label class="form-label d-block">Appliquer les actions suivantes :</label>
+											<div class="btn-group" role="group" aria-label="Actions à appliquer">
+												<div class="d-flex flex-wrap">
+													{% for action in all_actions %}
+														<input type="checkbox" class="btn-check" id="action_{{ action.id }}" name="actions[]" value="{{ action.id }}" autocomplete="off">
 
-														{% if action.logo %}
-															{% if action.logo starts with 'bi-' %}
-																<i class="bi {{ action.logo }} fs-5 text-primary"></i>
+														<label class="btn btn-outline-primary m-1 px-3 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm" for="action_{{ action.id }}" style="min-width: 180px;">
+
+															{% if action.logo %}
+																{% if action.logo starts with 'bi-' %}
+																	<i class="bi {{ action.logo }} fs-5 text-primary"></i>
+																{% else %}
+																	<img src="{{ asset('uploads/actions/' ~ action.logo) }}" alt="{{ action.label }}" class="img-fluid" style="height: 24px; width: auto;">
+																{% endif %}
 															{% else %}
-																<img src="{{ asset('uploads/actions/' ~ action.logo) }}" alt="{{ action.label }}" class="img-fluid" style="height: 24px; width: auto;">
+																<i class="bi bi-question-circle-fill text-muted fs-5"></i>
 															{% endif %}
-														{% else %}
-															<i class="bi bi-question-circle-fill text-muted fs-5"></i>
-														{% endif %}
 
-														<span class="flex-grow-1 text-truncate">{{ action.label }}</span>
-													</label>
-												{% endfor %}
+															<span class="flex-grow-1 text-truncate">{{ action.label }}</span>
+														</label>
+													{% endfor %}
+												</div>
+
 											</div>
-
+										</div>
+										<div class="col-md-3">
+											<button type="submit" class="btn btn-success mt-3 w-100">
+												<i class="bi bi-check-circle"></i>
+												Appliquer aux clients sélectionnés
+											</button>
 										</div>
 									</div>
-									<div class="col-md-3">
-										<button type="submit" class="btn btn-success mt-3 w-100">
-											<i class="bi bi-check-circle"></i>
-											Appliquer aux clients sélectionnés
-										</button>
-									</div>
-								</div>
-							</form>
+								</form>
+							{% endif %}
 						</div>
 
 						<div class="d-flex justify-content-center mt-4">
@@ -278,14 +281,14 @@
 
 {% block javascripts %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	 <script>
-														document.addEventListener('DOMContentLoaded', function () {
-															const selectAllCheckbox = document.getElementById('select-all');
-															if (selectAllCheckbox) {
-																selectAllCheckbox.addEventListener('change', function () {
-																	const checkboxes = document.querySelectorAll('input[name="clients[]"]');
-																	checkboxes.forEach(cb => cb.checked = this.checked);
-																});
-															}
-														});
-													</script>
+															document.addEventListener('DOMContentLoaded', function () {
+																const selectAllCheckbox = document.getElementById('select-all');
+																if (selectAllCheckbox) {
+																	selectAllCheckbox.addEventListener('change', function () {
+																		const checkboxes = document.querySelectorAll('input[name="clients[]"]');
+																		checkboxes.forEach(cb => cb.checked = this.checked);
+																	});
+																}
+															});
+														</script>
 {% endblock %}
