@@ -88,7 +88,7 @@ final class ClientController extends AbstractController
             $request->query->getInt('page', 1),
             10
         );
-        $allActions = $actionRepo->findAll();
+        $allActions = $actionRepo->findBy(['entite'=>$ids]);
         return $this->render('IDS/client/index.html.twig', [
             'pagination' => $pagination,
             'commerciaux' => $commerciaux,
@@ -199,8 +199,13 @@ final class ClientController extends AbstractController
         if (!$this->getUser()->hasPermission('IDS => Client : Create')) {
             throw $this->createAccessDeniedException();
         }
+        $societyRepo = $entityManager->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
         $client = new Client();
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'entreprise' => $ids,
+        ]);
         $form->handleRequest($request);
 
         // Récupère l'URL précédente (page liste par défaut)
@@ -237,7 +242,12 @@ final class ClientController extends AbstractController
         if (!$user->hasPermission('IDS => Client : Edit')) {
             throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
         }
-        $form = $this->createForm(ClientType::class, $client);
+        $societyRepo = $entityManager->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        
+        $form = $this->createForm(ClientType::class, $client, [
+            'entreprise' => $ids,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

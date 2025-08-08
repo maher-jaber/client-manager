@@ -88,7 +88,7 @@ final class ClientAltraController extends AbstractController
             $request->query->getInt('page', 1),
             10
         );
-        $allActions = $actionRepo->findAll();
+        $allActions = $actionRepo->findBy(['entite'=>$altra]);
         return $this->render('ALTRA/client/index.html.twig', [
             'pagination' => $pagination,
             'commerciaux' => $commerciaux,
@@ -166,7 +166,8 @@ final class ClientAltraController extends AbstractController
                     $client->getEmail(),
                     $client->getNomClient(),
                     'Mise à jour de vos actions',
-                    $htmlBody
+                    $htmlBody,
+                    'ALTRA'
                 );
                 $client->setDernierEnvoiMail(new \DateTimeImmutable());
             }
@@ -199,15 +200,20 @@ final class ClientAltraController extends AbstractController
         if (!$this->getUser()->hasPermission('ALTRA => Client : Create')) {
             throw $this->createAccessDeniedException();
         }
+        $societyRepo = $entityManager->getRepository(Society::class);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
+
         $client = new Client();
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'entreprise' => $altra,
+        ]);
         $form->handleRequest($request);
 
         // Récupère l'URL précédente (page liste par défaut)
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index_altra');
 
-        $societyRepo = $entityManager->getRepository(Society::class);
-        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
+       
+    
 
         if ($form->isSubmitted() && $form->isValid()) {
             $client->setEntite($altra);
@@ -237,7 +243,12 @@ final class ClientAltraController extends AbstractController
         if (!$user->hasPermission('ALTRA => Client : Edit')) {
             throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
         }
-        $form = $this->createForm(ClientType::class, $client);
+        $societyRepo = $entityManager->getRepository(Society::class);
+        $altra = $societyRepo->findOneBy(['label' => 'ALTRA']);
+
+        $form = $this->createForm(ClientType::class, $client, [
+            'entreprise' => $altra,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -255,7 +266,8 @@ final class ClientAltraController extends AbstractController
                     $client->getEmail(),
                     $client->getNomClient(),
                     'Mise à jour des actions vous concernant',
-                    $htmlBody
+                    $htmlBody,
+                    'ALTRA'
                 );
                 $client->setDernierEnvoiMail(new \DateTimeImmutable());
             }

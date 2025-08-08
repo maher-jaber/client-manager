@@ -4,7 +4,8 @@ namespace App\Form;
 
 use App\Entity\Action;
 use App\Entity\Client;
-
+use App\Repository\ActionRepository;
+use App\Repository\SocietyRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -18,6 +19,8 @@ class ClientType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $entreprise = $options['entreprise'] ?? null;
+
         $builder
             ->add('commercial', TextType::class, ['required' => false])
             ->add('nomClient', TextType::class)
@@ -42,10 +45,17 @@ class ClientType extends AbstractType
             ->add('email', EmailType::class, ['required' => false])
             ->add('actions', EntityType::class, [
                 'class' => Action::class,
-                'choice_label' => 'label', // à adapter selon ton champ dans Action
+                'choice_label' => 'label',
                 'multiple' => true,
                 'expanded' => true,
-                'mapped' => false, // <-- Clé ici : ne pas mapper à l'entité Client
+                'mapped' => false,
+                'query_builder' => function (ActionRepository $er) use ($options) {
+                    $entreprise = $options['entreprise'];
+                    return $er->createQueryBuilder('a')
+                        ->where('a.entite = :entite')
+                        ->setParameter('entite', $entreprise)
+                        ->orderBy('a.label', 'ASC');
+                },
             ]);
     }
 
@@ -54,5 +64,7 @@ class ClientType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Client::class,
         ]);
+        // ✅ On ajoute ici l’option personnalisée
+        $resolver->setDefined('entreprise');
     }
 }

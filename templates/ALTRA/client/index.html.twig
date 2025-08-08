@@ -52,7 +52,7 @@
 				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
 					<h1 class="h2">Liste des Clients</h1>
 					{% if app.user and app.user.hasPermission('ALTRA => Client : Create') %}
-						<a href="{{ path('app_client_new') }}" class="btn btn-primary">
+						<a href="{{ path('app_client_new_altra') }}" class="btn btn-primary">
 							<i class="bi bi-plus-circle"></i>
 							Nouveau client
 						</a>
@@ -61,7 +61,7 @@
 
 
 				<div class="search-container mb-4">
-					<form method="get" action="{{ path('app_client_index') }}" class="row g-3 align-items-end">
+					<form method="get" action="{{ path('app_client_index_altra') }}" class="row g-3 align-items-end">
 						<div class="col-md-2">
 							<label for="date_from" class="form-label">Dernier envoi entre (de)</label>
 							<input type="date" name="date_from" id="date_from" class="form-control" value="{{ app.request.query.get('date_from') }}">
@@ -94,7 +94,7 @@
 						</div>
 
 						<div class="col-md-2">
-							<a href="{{ path('app_client_index') }}" class="btn btn-outline-secondary w-100">
+							<a href="{{ path('app_client_index_altra') }}" class="btn btn-outline-secondary w-100">
 								<i class="bi bi-arrow-counterclockwise"></i>
 								Réinitialiser
 							</a>
@@ -176,12 +176,12 @@
 											<td>{{ client.numeroContrat }}</td>
 											<td class="text-nowrap">
 												{% if app.user and app.user.hasPermission('ALTRA => Client : View') %}
-													<a href="{{ path('app_client_show', {id: client.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+													<a href="{{ path('app_client_show_altra', {id: client.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
 														<i class="bi bi-eye"></i>
 													</a>
 												{% endif %}
 												{% if app.user and app.user.hasPermission('ALTRA => Client : Edit') %}
-													<a href="{{ path('app_client_edit', {id: client.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+													<a href="{{ path('app_client_edit_altra', {id: client.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
 														<i class="bi bi-pencil"></i>
 													</a>
 												{% endif %}
@@ -208,7 +208,7 @@
 																</div>
 																<div class="modal-footer">
 																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-																	<form method="post" action="{{ path('app_client_delete', {'id': client.id}) }}" style="display:inline-block;">
+																	<form method="post" action="{{ path('app_client_delete_altra', {'id': client.id}) }}" style="display:inline-block;">
 																		<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
 																		<button type="submit" class="btn btn-danger">Supprimer</button>
 																	</form>
@@ -230,7 +230,7 @@
 							</table>
 							{% if app.user and app.user.hasPermission('ALTRA => Client : Bulk_action') %}
 
-								<form id="bulk-form" method="POST" action="{{ path('app_client_bulk_actions') }}">
+								<form id="bulk-form" method="POST" action="{{ path('app_client_bulk_actions_altra') }}">
 									<div class="d-flex justify-content-between align-items-center p-3 border-top">
 										<div class="col-md-9">
 											<label class="form-label d-block">Appliquer les actions suivantes :</label>
