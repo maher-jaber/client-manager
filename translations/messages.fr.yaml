@@ -1,2 +1,33 @@
 sort.asc: '↑'
 sort.desc: '↓'
+# ids
+permission.ids.client.create: "Creer un clients"
+permission.ids.client.list: "Lister les clients"
+permission.ids.client.view: "Voir un client"
+permission.ids.client.edit: "Modifier un client"
+permission.ids.client.delete: "Supprimer un client"
+permission.ids.client.bulk_action: "Actions groupées sur les clients"
+
+permission.ids.action.create: "Creer une action"
+permission.ids.action.list: "Lister les actions"
+permission.ids.action.view: "Voir une action"
+permission.ids.action.edit: "Modifier une action"
+permission.ids.action.delete: "Supprimer une action"
+
+permission.ids.log.list: "Voir les journaux"
+
+# altra
+permission.altra.client.create: "Creer un clients"
+permission.altra.client.list: "Lister les clients"
+permission.altra.client.view: "Voir un client"
+permission.altra.client.edit: "Modifier un client"
+permission.altra.client.delete: "Supprimer un client"
+permission.altra.client.bulk_action: "Actions groupées sur les clients"
+
+permission.altra.action.create: "Creer une action"
+permission.altra.action.list: "Lister les actions"
+permission.altra.action.view: "Voir une action"
+permission.altra.action.edit: "Modifier une action"
+permission.altra.action.delete: "Supprimer une action"
+
+permission.altra.log.list: "Voir les journaux"

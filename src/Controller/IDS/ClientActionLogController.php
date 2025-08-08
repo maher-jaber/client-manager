@@ -3,6 +3,7 @@
 namespace App\Controller\IDS;
 
 use App\Entity\ClientActionLog;
+use App\Entity\Society;
 use App\Form\ClientActionLogType;
 use App\Repository\ClientActionLogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,12 +17,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ClientActionLogController extends AbstractController
 {
     #[Route(name: 'app_client_action_log_index', methods: ['GET'])]
-    public function index(Request $request,ClientActionLogRepository $clientActionLogRepository,PaginatorInterface $paginator): Response
+    public function index(EntityManagerInterface $em,Request $request,ClientActionLogRepository $clientActionLogRepository,PaginatorInterface $paginator): Response
     {
         if (!$this->getUser()->hasPermission('IDS => Log : List')) {
             throw $this->createAccessDeniedException();
         }
-        $qb = $clientActionLogRepository->createQueryBuilder('l');
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
+        $qb = $clientActionLogRepository->createQueryBuilder('l')
+        ->andWhere('l.entite = :ids')
+        ->setParameter('ids', $ids->getId());
+
         $qb->orderBy('l.performedAt', 'DESC'); // Tri par défaut
         $pagination = $paginator->paginate(
             $qb->getQuery(),

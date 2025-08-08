@@ -23,7 +23,7 @@ class PermissionFixtures extends Fixture
         }
 
         $entities = ['client', 'action'];
-        $actions = ['list', 'view', 'edit', 'delete'];
+        $actions = ['create','list', 'view', 'edit', 'delete'];
 
         foreach ($entities as $entity) {
             foreach ($actions as $action) {
@@ -71,7 +71,7 @@ class PermissionFixtures extends Fixture
         
         $permission->setEntity('client');
         $permission->setAction('bulk_action');
-        $permission->setEntreprise($ids);
+        $permission->setEntreprise($altra);
        
         $manager->persist($permission);
 

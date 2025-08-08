@@ -80,7 +80,13 @@
                                     <div class="col-md-6">
                                         <div class="form-check">
                                             {{ form_widget(checkbox, {'attr': {'class': 'form-check-input'}}) }}
-                                            {{ form_label(checkbox, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                            {% set rawLabel = checkbox.vars.label %}
+{% set rawLabel = checkbox.vars.label %}
+{% set key = rawLabel
+    |replace({'=> ': '.', ': ': '.'})
+    |replace({' ': ''})
+    |lower %}
+{{ form_label(checkbox, ('permission.' ~ key)|trans, {'label_attr': {'class': 'form-check-label'}}) }}
                                         </div>
                                     </div>
                                 {% endfor %}

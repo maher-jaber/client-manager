@@ -4,6 +4,7 @@ namespace App\Controller\IDS;
 
 use App\Entity\Client;
 use App\Entity\ClientActionLog;
+use App\Entity\Society;
 use App\Form\ClientType;
 use App\Repository\ActionRepository;
 use App\Repository\ClientRepository;
@@ -26,11 +27,18 @@ final class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index')]
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, ActionRepository $actionRepo, Request $request): Response
     {
+
+
         if (!$this->getUser()->hasPermission('IDS => Client : List')) {
             throw $this->createAccessDeniedException();
         }
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+        
         $queryBuilder = $em->getRepository(Client::class)
             ->createQueryBuilder('c')
+            ->andWhere('c.entite = :ids')
+            ->setParameter('ids', $ids->getId())
             ->orderBy('c.nomClient', 'ASC');
 
         // Filtre par commercial
@@ -131,6 +139,8 @@ final class ClientController extends AbstractController
             $this->addFlash('danger', 'Aucun email envoyé : les clients suivants n\'ont pas d\'adresse email : ' . implode(', ', $noms));
             return $this->redirectToRoute('app_client_index');
         }
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
 
         // Tous les clients ont un email → on peut continuer
         foreach ($clients as $client) {
@@ -164,7 +174,7 @@ final class ClientController extends AbstractController
             $log->setPerformedAt(new \DateTime());
             $log->setPerformedBy($this->getUser()?->getUserIdentifier() ?? 'system');
 
-
+            $log->setEntite($ids);
             $log->addClient($client);
 
 
@@ -196,8 +206,13 @@ final class ClientController extends AbstractController
         // Récupère l'URL précédente (page liste par défaut)
         $referer = $request->headers->get('referer') ?? $this->generateUrl('app_client_index');
 
+        $societyRepo = $entityManager->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $client->setEntite($ids);
             $entityManager->persist($client);
+
             $entityManager->flush();
 
             return $this->redirect($referer);
@@ -217,20 +232,11 @@ final class ClientController extends AbstractController
         MailerService $mailerService
     ): Response {
 
-
         $user = $this->getUser();
-
         // Vérifie que l'utilisateur a la permission 'edit' sur l'entité 'client'
         if (!$user->hasPermission('IDS => Client : Edit')) {
             throw $this->createAccessDeniedException('Accès refusé : vous n\'avez pas la permission d\'éditer un client.');
         }
-
-
-
-
-
-
-
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
@@ -318,11 +324,15 @@ final class ClientController extends AbstractController
         ?Collection $oldActions = null,
         EntityManagerInterface $em,
     ): void {
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
         $log = new ClientActionLog();
         $log->setPerformedAt(new \DateTime());
         $log->setPerformedBy($performedBy);
         $log->setNote($note);
-
+        $log->setEntite($ids);
+        
         foreach ($clients as $client) {
             $log->addClient($client);
         }

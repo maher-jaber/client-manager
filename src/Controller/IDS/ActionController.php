@@ -3,6 +3,7 @@
 namespace App\Controller\IDS;
 
 use App\Entity\Action;
+use App\Entity\Society;
 use App\Form\ActionType;
 use App\Repository\ActionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,17 +19,22 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ActionController extends AbstractController
 {
     #[Route('/', name: 'app_action_index', methods: ['GET'])]
-    public function index(Request $request, ActionRepository $actionRepository, PaginatorInterface $paginator): Response
+    public function index(EntityManagerInterface $em, Request $request, ActionRepository $actionRepository, PaginatorInterface $paginator): Response
     {
         if (!$this->getUser()->hasPermission('IDS => Action : List')) {
             throw $this->createAccessDeniedException();
         }
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
         $search = $request->query->get('search');
-        $qb = $actionRepository->createQueryBuilder('a');
+        $qb = $actionRepository->createQueryBuilder('a')
+            ->andWhere('a.entite = :ids')
+            ->setParameter('ids', $ids->getId());
 
         if ($search) {
             $qb->where('a.label LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
+                ->setParameter('search', '%' . $search . '%');
         }
 
         $qb->orderBy('a.label', 'ASC');
@@ -54,7 +60,16 @@ final class ActionController extends AbstractController
         $form = $this->createForm(ActionType::class, $action);
         $form->handleRequest($request);
 
+
+        $societyRepo = $em->getRepository(Society::class);
+        $ids = $societyRepo->findOneBy(['label' => 'IDS']);
+
+
+
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $action->setEntite($ids);
+
             $logoFile = $form->get('logo')->getData();
 
             if ($logoFile) {
