@@ -109,7 +109,7 @@ final class ClientController extends AbstractController
 
 
         
-        if (!$this->getUser()->hasPermission('IDS => client : Bulk_action')) {
+        if (!$this->getUser()->hasPermission('IDS => Client : Bulk_action')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -332,7 +332,7 @@ final class ClientController extends AbstractController
         $log->setPerformedBy($performedBy);
         $log->setNote($note);
         $log->setEntite($ids);
-        
+
         foreach ($clients as $client) {
             $log->addClient($client);
         }
